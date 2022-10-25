@@ -68,51 +68,59 @@ class PlaylistRepository extends ServiceEntityRepository
     }
 
     /**
+     * Enregistrements dont un champ dans une autre table contient une valeur 
+     * ou tous les enregistrements si la valeur est vide
+     * @param type $champ
+     * @param type $valeur
+     * @param type $table 
+     * @return Playlist[]
+     */
+    public function findByContainValueTable($champ, $valeur, $table): array {
+        if ($valeur == "") {
+            return $this->findAllOrderBy('name', 'ASC');
+        }
+        return $this->createQueryBuilder('p')
+                        ->select($this->id)
+                        ->addSelect($this->pName)
+                        ->addSelect($this->categorieName)
+                        ->join($this->formations, 'f')
+                        ->leftjoin($this->categories, 'c')
+                        ->where('c.' . $champ . ' LIKE :valeur')
+                        ->setParameter('valeur', '%' . $valeur . '%')
+                        ->groupBy('p.id')
+                        ->addGroupBy($this->cName)
+                        ->orderBy('p.name', 'ASC')
+                        ->addOrderBy($this->cName)
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    /**
      * Enregistrements dont un champ contient une valeur
      * ou tous les enregistrements si la valeur est vide
      * @param type $champ
      * @param type $valeur
-     * @param type $table si $champ dans une autre table
      * @return Playlist[]
      */
-    public function findByContainValue($champ, $valeur, $table=""): array{
-        if($valeur==""){
+    public function findByContainValue($champ, $valeur): array {
+        if ($valeur == "") {
             return $this->findAllOrderBy('name', 'ASC');
-        }    
-        if($table==""){      
-            return $this->createQueryBuilder('p')
-                    ->select($this->id)
-                    ->addSelect($this->pName)
-                    ->addSelect($this->categorieName)
-                    ->join($this->formations, 'f')
-                    ->leftjoin($this->categories, 'c')
-                    ->where('p.'.$champ.' LIKE :valeur')
-                    ->setParameter('valeur', '%'.$valeur.'%')
-                    ->groupBy('p.id')
-                    ->addGroupBy($this->cName)
-                    ->orderBy('p.name', 'ASC')
-                    ->addOrderBy($this->cName)
-                    ->getQuery()
-                    ->getResult();              
-        }else{   
-            return $this->createQueryBuilder('p')
-                    ->select($this->id)
-                    ->addSelect($this->pName)
-                    ->addSelect($this->categorieName)
-                    ->join($this->formations, 'f')
-                    ->leftjoin($this->categories, 'c')
-                    ->where('c.'.$champ.' LIKE :valeur')
-                    ->setParameter('valeur', '%'.$valeur.'%')
-                    ->groupBy('p.id')
-                    ->addGroupBy($this->cName)
-                    ->orderBy('p.name', 'ASC')
-                    ->addOrderBy($this->cName)
-                    ->getQuery()
-                    ->getResult();              
-            
-        }           
-    }    
+        }
 
+        return $this->createQueryBuilder('p')
+                        ->select($this->id)
+                        ->addSelect($this->pName)
+                        ->addSelect($this->categorieName)
+                        ->join($this->formations, 'f')
+                        ->leftjoin($this->categories, 'c')
+                        ->where('p.' . $champ . ' LIKE :valeur')
+                        ->setParameter('valeur', '%' . $valeur . '%')
+                        ->groupBy('p.id')
+                        ->addGroupBy($this->cName)
+                        ->orderBy('p.name', 'ASC')
+                        ->addOrderBy($this->cName)
+                        ->getQuery()
+                        ->getResult();
+    }
 
-    
 }
