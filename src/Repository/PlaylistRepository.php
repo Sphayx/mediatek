@@ -14,22 +14,13 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Playlist[]    findAll()
  * @method Playlist[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlaylistRepository extends ServiceEntityRepository
-{
-    private $id = 'p.id id';
-    private $pName = 'p.name name';
-    private $categorieName = 'c.name categoriename';
-    private $formations = 'p.formations';
-    private $categories = 'f.categories';
-    private $cName = 'c.name';
-    
-    public function __construct(ManagerRegistry $registry)
-    {
+class PlaylistRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Playlist::class);
     }
 
-    public function add(Playlist $entity, bool $flush = false): void
-    {
+    public function add(Playlist $entity, bool $flush = false): void {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
@@ -37,34 +28,34 @@ class PlaylistRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Playlist $entity, bool $flush = false): void
-    {
+    public function remove(Playlist $entity, bool $flush = false): void {
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
     }
-    
+
     /**
      * Retourne toutes les playlists triées sur un champ
      * @param type $champ
      * @param type $ordre
      * @return Playlist[]
      */
-    public function findAllOrderBy($champ, $ordre): array{
+    public function findAllOrderBy($champ, $ordre): array {
         return $this->createQueryBuilder('p')
-                ->select($this->id)
-                ->addSelect($this->pName)
-                ->addSelect($this->categorieName)
-                ->join($this->formations, 'f')
-                ->leftjoin($this->categories, 'c')
-                ->groupBy('p.id')
-                ->addGroupBy($this->cName)
-                ->orderBy('p.'.$champ, $ordre)
-                ->addOrderBy($this->cName)
-                ->getQuery()
-                ->getResult();       
+                        ->select('p.id id')
+                        ->addSelect('p.name name')
+                        ->addSelect('c.name categoriename')
+                        ->addSelect('count(f.playlist) nbformations')
+                        ->join('p.formations', 'f')
+                        ->leftjoin('f.categories', 'c')
+                        ->groupBy('p.id')
+                        ->addGroupBy('c.name')
+                        ->orderBy($champ, $ordre)
+                        ->addOrderBy('c.name')
+                        ->getQuery()
+                        ->getResult();
     }
 
     /**
@@ -80,17 +71,18 @@ class PlaylistRepository extends ServiceEntityRepository
             return $this->findAllOrderBy('name', 'ASC');
         }
         return $this->createQueryBuilder('p')
-                        ->select($this->id)
-                        ->addSelect($this->pName)
-                        ->addSelect($this->categorieName)
-                        ->join($this->formations, 'f')
-                        ->leftjoin($this->categories, 'c')
+                        ->select('p.id id')
+                        ->addSelect('p.name name')
+                        ->addSelect('c.name categoriename')
+                        ->addSelect('count(f.playlist) nbformations')
+                        ->join('p.formations', 'f')
+                        ->leftjoin('f.categories', 'c')
                         ->where('c.' . $champ . ' LIKE :valeur')
                         ->setParameter('valeur', '%' . $valeur . '%')
                         ->groupBy('p.id')
-                        ->addGroupBy($this->cName)
+                        ->addGroupBy('c.name')
                         ->orderBy('p.name', 'ASC')
-                        ->addOrderBy($this->cName)
+                        ->addOrderBy('c.name')
                         ->getQuery()
                         ->getResult();
     }
@@ -108,19 +100,41 @@ class PlaylistRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('p')
-                        ->select($this->id)
-                        ->addSelect($this->pName)
-                        ->addSelect($this->categorieName)
-                        ->join($this->formations, 'f')
-                        ->leftjoin($this->categories, 'c')
+                        ->select('p.id id')
+                        ->addSelect('p.name name')
+                        ->addSelect('c.name categoriename')
+                        ->addSelect('count(f.playlist) nbformations')
+                        ->join('p.formations', 'f')
+                        ->leftjoin('f.categories', 'c')
                         ->where('p.' . $champ . ' LIKE :valeur')
                         ->setParameter('valeur', '%' . $valeur . '%')
                         ->groupBy('p.id')
-                        ->addGroupBy($this->cName)
+                        ->addGroupBy('c.name')
                         ->orderBy('p.name', 'ASC')
-                        ->addOrderBy($this->cName)
+                        ->addOrderBy('c.name')
                         ->getQuery()
                         ->getResult();
     }
 
 }
+
+//     Non fonctionnel
+//     /**
+//     * 
+//     * @param type $idPlaylist
+//     * @return Playlist|null
+//     */
+//    public function findOneByPlaylist($idPlaylist): Playlist {
+//        return $this->createQueryBuilder('p')
+//                        ->select('p.id id')
+//                        ->addSelect('p.name name')
+//                        ->addSelect('p.description description')
+//                        ->addSelect('count(f.playlist) nbformations')
+//                        ->join('p.formations', 'f')
+//                        ->where('p.id=:id')
+//                        ->setParameter('id', $idPlaylist)
+//                        ->orderBy('p.id')
+//                        ->getQuery()
+//                        ->getSingleResult();
+//    }
+
