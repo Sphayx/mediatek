@@ -115,7 +115,7 @@ class PlaylistRepository extends ServiceEntityRepository {
                         ->getQuery()
                         ->getResult();
     }
-
+        
 }
 
 //     Non fonctionnel

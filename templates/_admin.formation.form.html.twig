@@ -1,0 +1,14 @@
+{{ form_start(formformation) }}
+<div class="row">
+    <div class="col align-self-auto" >
+        {{ form_row(formformation.title) }}
+        {{ form_row(formformation.publishedAt) }}
+        {{ form_row(formformation.playlist) }}
+    </div>
+    <div class="col align-self-auto">
+        {{ form_row(formformation.categories) }}
+        {{ form_row(formformation.videoId) }}
+    </div>
+    {{ form_row(formformation.description) }}
+</div>
+{{ form_end(formformation) }}

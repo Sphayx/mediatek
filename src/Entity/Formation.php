@@ -51,20 +51,6 @@ class Formation {
     private $playlist;
     
     /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $playlistId;
-    
-    function getPlaylistId() {
-        return $this->playlistId;
-    }
-
-    function setPlaylistId($playlistId) {
-        $this->playlistId = $playlistId;
-        return $this;
-    }
-
-        /**
      * @ORM\ManyToMany(targetEntity=Categorie::class, inversedBy="formations")
      */
     private $categories;
