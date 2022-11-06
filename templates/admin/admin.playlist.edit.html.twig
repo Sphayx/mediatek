@@ -1,0 +1,29 @@
+{% extends 'baseadmin.html.twig' %}
+{% block body %}
+    <h1>Modifier une playlist</h1>
+    <div class='row'>
+        <div class ='col'>
+            {% include '_admin.playlist.form.html.twig' %}
+        </div>
+        <div class="col">
+            <!-- boucle sur l'affichage des formations -->
+            {% for formation in playlistformations %} 
+                <div class="row mt-1">
+                    <div class="col-md-auto">
+                        {% if formation.miniature %}
+                            <a href="{{ path('formations.showone', {id:formation.id}) }}">
+                                <img src="{{ formation.miniature }}" alt="formation">
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <a href="{{ path('formations.showone', {id:formation.id}) }}"
+                           class="link-secondary text-decoration-none">
+                            {{ formation.title }}
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

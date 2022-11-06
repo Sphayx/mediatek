@@ -1,0 +1,101 @@
+{% extends "baseadmin.html.twig" %}
+
+{% block body %}
+    <div class="row">
+        <div class="col text-center">
+            <h1> Gestion des playlists</h>
+        </div>
+        <div class ="col text-end">
+            <a href="{{ path('admin.playlist.ajout') }}" class="btn btn-primary" >Ajouter une nouvelle playlist</a>
+        </div>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-left align-top" scope="col">
+                    playlist<br />
+                    <a href="{{ path('admin.playlists.sort', {champ:'name', ordre:'ASC'}) }}" class="btn btn-info btn-sm active" role="button" aria-pressed="true"><</a>
+                    <a href="{{ path('admin.playlists.sort', {champ:'name', ordre:'DESC'}) }}" class="btn btn-info btn-sm active" role="button" aria-pressed="true">></a>
+                    <form class="form-inline mt-1" method="POST" action="{{ path('admin.playlists.findallcontain', {champ:'name'}) }}">
+                        <div class="form-group mr-1 mb-2">
+                            <input type="text" class="sm" name="recherche" 
+                                   value="{% if valeur|default and not table|default %}{{ valeur }}{% endif %}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('filtre_name') }}">
+                            <button type="submit" class="btn btn-info mb-2 btn-sm">filtrer</button>
+                        </div>
+                    </form>
+                </th>
+                <th class="text-left align-top" scope="col">
+                    catégories
+                    <form class="form-inline mt-1" method="POST" action="{{ path('admin.playlists.findallcontaintable', {champ:'id', table:'categories'}) }}">
+                        <select class="form-select form-select-sm" name="recherche" id="recherche" onchange="this.form.submit()">
+                            <option value=""></option>
+                            {% for categorie in categories %}
+                                <option
+                                    {% if valeur|default and valeur==categorie.id %}
+                                        selected
+                                    {% endif %}
+                                    value="{{ categorie.id }}">{{ categorie.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </th>
+                <th class="text-left align-top" scope="col">
+                    Nombre de <br />formations<br />
+                    <a href="{{ path('admin.playlists.sort', {champ:'nbformations', ordre:'ASC'}) }}" class="btn btn-info btn-sm active" role="button" aria-pressed="true"><</a>
+                    <a href="{{ path('admin.playlists.sort', {champ:'nbformations', ordre:'DESC'}) }}" class="btn btn-info btn-sm active" role="button" aria-pressed="true">></a>
+                </th>
+                <th class="text-center align-top" scope="col">
+                    &nbsp;
+                </th>
+                <th class="text-center" scope="col">
+                    Actions             
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- boucle sur les playlists -->
+            {% set ancplaylist = '' %}
+            {% for k in 0..playlists|length-1 %}
+                <!-- affichage une fois chaque playlist -->
+                {% if playlists[k].name != ancplaylist %}
+                    {% set ancplaylist = playlists[k].name %}
+                    <tr class="align-middle">
+                        <td>
+                            <h5 class="text-info">
+                                {{ playlists[k].name }}
+                            </h5>
+                        </td>
+                        <td class="text-left">
+                            {{ playlists[k].categoriename }}
+                            <!-- boucle sur les playlists identiques pour afficher les categories -->
+                            {% if k < playlists|length-1 %}
+                                {% for j in k+1..playlists|length-1 %}
+                                    <!-- affichage une fois de chaque catégorie -->
+                                    {% if ancplaylist == playlists[j].name %}
+                                        &nbsp;{{ playlists[j].categoriename }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {{ playlists[k].nbformations }}
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ path('admin.playlists.showone', {id:playlists[k].id}) }}" class="btn btn-secondary">Voir détail</a>
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ path('admin.playlist.edit', {id:playlists[k].id}) }}" class="btn btn-secondary">Modifier</a>
+                            {% if playlists[k].nbformations == 0 %}
+                                <a href="{{ path('admin.playlist.suppr', {id:playlists[k].id}) }}" class="btn btn-danger" onclick="return confirm('Etes vous sûr de supprimer {{playlists[k].name}} ?')">Supprimer</a>
+                            {% else %}
+                                <a href="#"class="btn btn-danger" onclick="return confirm('{{playlists[k].name}} ne doit pas contenir de formations pour pouvoir être supprimé.')">Supprimer</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
