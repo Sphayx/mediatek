@@ -2,8 +2,12 @@
 
 {% block top %}
     <div class="container">
-                <div class="text-left ">
+        <div class="row">
+        <div class="col">
             <img src="{{ app.request.getBasePath()~'/banniere.jpg' }}" alt="bannière" >
+        </div>
+        <div class="col text-end">
+            <a href="{{ path('logout') }}">Déconnexion</a>
         </div>
         <!-- menu -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">

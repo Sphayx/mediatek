@@ -53,7 +53,7 @@ class CategorieRepository extends ServiceEntityRepository {
     }
 
     /**
-     * Retourne toutes les playlists triées sur un champ
+     * Retourne toutes les catégories triées sur un champ
      * @param type $champ
      * @param type $ordre
      * @return array
@@ -72,7 +72,7 @@ class CategorieRepository extends ServiceEntityRepository {
     }
     
     /**
-     * 
+     * Retourne le même nom entré en paramètre, si il existe. 
      * @param type $nom
      * @return string
      */
